@@ -1,5 +1,5 @@
 import type { JSX } from "solid-js";
-import { For } from "solid-js";
+import { For, batch } from "solid-js";
 
 import { Preset } from "./types";
 import "./Life.css";
@@ -38,18 +38,22 @@ function Settings(props: Props): JSX.Element {
 
   function updateWidth(value: number) {
     const newWidth = Math.max(value, MIN_LENGTH);
-    width.setWidth(newWidth);
-    pop.setPopulation(
-      getInitialState(pop.population(), newWidth, height.size())
-    );
+    batch(() => {
+      width.setWidth(newWidth);
+      pop.setPopulation(
+        getInitialState(pop.population(), newWidth, height.size())
+      );
+    });
   }
 
   function updateHeight(value: number) {
     const newHeight = Math.max(value, MIN_LENGTH);
-    height.setHeight(newHeight);
-    pop.setPopulation(
-      getInitialState(pop.population(), width.size(), newHeight)
-    );
+    batch(() => {
+      height.setHeight(newHeight);
+      pop.setPopulation(
+        getInitialState(pop.population(), width.size(), newHeight)
+      );
+    });
   }
 
   function loadPreset(id: string) {
@@ -58,16 +62,21 @@ function Settings(props: Props): JSX.Element {
     const newHeight = newPreset?.height || height.size();
     const newSize = newPreset?.size || DEFAULT_SIZE;
 
-    width.setWidth(newWidth);
-    height.setHeight(newHeight);
-    size.setSize(newSize);
-    preset.setPreset(id);
-
     window.localStorage.setItem("presetId", id);
 
-    pop.setPopulation(
-      getInitialState(newPreset?.grid || pop.population(), newWidth, newHeight)
-    );
+    batch(() => {
+      width.setWidth(newWidth);
+      height.setHeight(newHeight);
+      size.setSize(newSize);
+      preset.setPreset(id);
+      pop.setPopulation(
+        getInitialState(
+          newPreset?.grid || pop.population(),
+          newWidth,
+          newHeight
+        )
+      );
+    });
   }
   let frameId = 0;
 
@@ -185,6 +194,6 @@ function Settings(props: Props): JSX.Element {
       </div>
     </div>
   );
-};
+}
 
 export default Settings;
