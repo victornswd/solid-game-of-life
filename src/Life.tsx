@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-import { For } from "solid-js";
+import { Index } from "solid-js";
 import { Grid } from "./types";
 import "./Life.css";
 
@@ -21,7 +21,7 @@ const Life: Component<Props> = (props) => {
       class={`life`}
       style={style}
     >
-      <For each={props.population}>{(row) => <Row row={row} />}</For>
+      <Index each={props.population}>{(row) => <Row row={row()} />}</Index>
     </div>
   );
 };
@@ -33,7 +33,7 @@ interface RowProps {
 const Row: Component<RowProps> = (props) => {
   return (
     <div class="row">
-      <For each={props.row}>{(cell) => <Cell alive={cell} />}</For>
+      <Index each={props.row}>{(cell) => <Cell alive={cell()} />}</Index>
     </div>
   );
 };
