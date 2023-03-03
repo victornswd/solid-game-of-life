@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import type { JSX } from "solid-js";
 import { For } from "solid-js";
 
 import { Preset } from "./types";
@@ -32,7 +32,7 @@ export const LifetimeValues: Record<number, { value: number; label: string }> =
     5: { value: 500, label: "0.5s" },
   });
 
-const Settings: Component<Props> = (props) => {
+function Settings(props: Props): JSX.Element {
   const initialPreset = window.localStorage.getItem("presetId") || "";
   initialPreset && loadPreset(initialPreset);
 

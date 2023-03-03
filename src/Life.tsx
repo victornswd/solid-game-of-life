@@ -1,4 +1,4 @@
-import type { Component } from "solid-js";
+import type { JSX } from "solid-js";
 import { Index } from "solid-js";
 import { Grid } from "./types";
 import "./Life.css";
@@ -12,7 +12,7 @@ const SIZE_THRESHOLD = 15;
 // const OptimizedRow = React.memo(Row);
 // const OptimizedCell = React.memo(Cell);
 
-const Life: Component<Props> = (props) => {
+function Life(props: Props): JSX.Element {
   const style = { "--size": `${props.size}px` };
 
   return (
@@ -30,7 +30,7 @@ interface RowProps {
   row: Array<boolean>;
 }
 
-const Row: Component<RowProps> = (props) => {
+function Row(props: RowProps): JSX.Element {
   return (
     <div class="row">
       <Index each={props.row}>{(cell) => <Cell alive={cell()} />}</Index>
@@ -42,7 +42,7 @@ interface CellProps {
   alive: boolean;
 }
 
-const Cell: Component<CellProps> = (props) => {
+function Cell(props: CellProps): JSX.Element {
   return (
     <span class={`cell`} classList={{ ["cell-alive"]: props.alive }}></span>
   );
