@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App";
 
 import { getPresets } from "./presets";
+import { SettingsProvider } from "../context";
 const presets = getPresets();
 
 const root = document.getElementById("root");
@@ -15,4 +16,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <App presets={presets} />, root!);
+render(
+  () => (
+    <SettingsProvider renderer={"html"}>
+      <App presets={presets} />
+    </SettingsProvider>
+  ),
+  root!
+);

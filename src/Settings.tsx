@@ -1,20 +1,11 @@
 import type { JSX } from "solid-js";
-import { For, batch } from "solid-js";
+import { For, Show, batch } from "solid-js";
 
 import { Preset } from "./types";
 import "./Life.css";
 import { getInitialState, getNextPopulation } from "./utils";
 import type { Renderer } from "./store";
-import {
-  player,
-  renderer,
-  size,
-  pop,
-  lf,
-  preset,
-  width,
-  height,
-} from "./store";
+import { useSettings } from "../context";
 
 type Props = {
   presets: Preset[];
@@ -33,48 +24,60 @@ export const LifetimeValues: Record<number, { value: number; label: string }> =
   });
 
 function Settings(props: Props): JSX.Element {
+  const [
+    play,
+    { togglePlay },
+    engine,
+    setRenderer,
+    width,
+    setWidth,
+    height,
+    setHeight,
+    size,
+    setSize,
+    population,
+    setPopulation,
+    lifetime,
+    setLifetime,
+    value,
+    setPreset,
+  ] = useSettings();
+
   const initialPreset = window.localStorage.getItem("presetId") || "";
   initialPreset && loadPreset(initialPreset);
 
   function updateWidth(value: number) {
     const newWidth = Math.max(value, MIN_LENGTH);
     batch(() => {
-      width.setWidth(newWidth);
-      pop.setPopulation(
-        getInitialState(pop.population(), newWidth, height.size())
-      );
+      setWidth(newWidth);
+      setPopulation(getInitialState(population(), newWidth, height()));
     });
   }
 
   function updateHeight(value: number) {
     const newHeight = Math.max(value, MIN_LENGTH);
     batch(() => {
-      height.setHeight(newHeight);
-      pop.setPopulation(
-        getInitialState(pop.population(), width.size(), newHeight)
-      );
+      setHeight(newHeight);
+      setPopulation(getInitialState(population(), width(), newHeight));
     });
   }
 
   function loadPreset(id: string) {
     const newPreset = props.presets.find((p: Preset) => p.id === id);
-    const newWidth = newPreset?.width || width.size();
-    const newHeight = newPreset?.height || height.size();
+    const newWidth = newPreset?.width || width();
+    const newHeight = newPreset?.height || height();
     const newSize = newPreset?.size || DEFAULT_SIZE;
 
+    console.log(newPreset, newWidth);
     window.localStorage.setItem("presetId", id);
 
     batch(() => {
-      width.setWidth(newWidth);
-      height.setHeight(newHeight);
-      size.setSize(newSize);
-      preset.setPreset(id);
-      pop.setPopulation(
-        getInitialState(
-          newPreset?.grid || pop.population(),
-          newWidth,
-          newHeight
-        )
+      setWidth(newWidth);
+      setHeight(newHeight);
+      setSize(newSize);
+      setPreset(id);
+      setPopulation(
+        getInitialState(newPreset?.grid || population(), newWidth, newHeight)
       );
     });
   }
@@ -83,7 +86,7 @@ function Settings(props: Props): JSX.Element {
   const useInterval = (callback: Function, msDelay: number | null) => {
     console.log("here", msDelay);
 
-    if (!player.play()) {
+    if (!play()) {
       window.cancelAnimationFrame(frameId);
       return;
     }
@@ -96,19 +99,16 @@ function Settings(props: Props): JSX.Element {
   };
 
   function nextGeneration() {
-    return pop.setPopulation(getNextPopulation(pop.population()));
+    return setPopulation(getNextPopulation(population()));
   }
 
-  useInterval(
-    nextGeneration,
-    player.play() ? LifetimeValues[lf.lifetime()].value : null
-  );
+  useInterval(nextGeneration, play() ? LifetimeValues[lifetime()].value : null);
 
   return (
     <div>
       Preset:{" "}
       <select
-        value={preset.value()}
+        value={value()}
         onChange={(e) => loadPreset((e.target as HTMLInputElement).value)}
       >
         <option value="">Select a preset</option>
@@ -117,11 +117,9 @@ function Settings(props: Props): JSX.Element {
         </For>
       </select>
       <select
-        value={renderer.engine()}
+        value={engine()}
         onChange={(e) =>
-          renderer.toggleRenderer(
-            (e.target as HTMLInputElement).value as Renderer
-          )
+          setRenderer((e.target as HTMLInputElement).value as Renderer)
         }
         style={{ "margin-left": "-1px" }}
       >
@@ -131,7 +129,7 @@ function Settings(props: Props): JSX.Element {
       Width:{" "}
       <input
         type="number"
-        value={width.size()}
+        value={width()}
         onChange={(e) => updateWidth(+(e.target as HTMLInputElement).value)}
         maxLength={3}
         class="input"
@@ -139,7 +137,7 @@ function Settings(props: Props): JSX.Element {
       Height:{" "}
       <input
         type="number"
-        value={height.size()}
+        value={height()}
         onChange={(e) => updateHeight(+(e.target as HTMLInputElement).value)}
         maxLength={3}
         class="input"
@@ -147,8 +145,8 @@ function Settings(props: Props): JSX.Element {
       Size:{" "}
       <input
         type="number"
-        value={size.size()}
-        onChange={(e) => size.setSize(+(e.target as HTMLInputElement).value)}
+        value={size()}
+        onChange={(e) => setSize(+(e.target as HTMLInputElement).value)}
         maxLength={3}
         class="input"
       />{" "}
@@ -157,31 +155,30 @@ function Settings(props: Props): JSX.Element {
       <div style={{ display: "flex", "align-items": "center" }}>
         <button
           onClick={() => {
-            player.togglePlay();
+            togglePlay();
             useInterval(
               nextGeneration,
-              player.play() ? LifetimeValues[lf.lifetime()].value : null
+              play() ? LifetimeValues[lifetime()].value : null
             );
           }}
         >
-          {player.play() ? "Stop" : "Play"}
+          {play() ? "Stop" : "Play"}
         </button>{" "}
-        {preset && (
+        <Show when={value()}>
           <button
-            onClick={() => loadPreset(preset.value())}
+            onClick={() => loadPreset(value())}
             style={{ "margin-left": "-1px" }}
           >
             ↺
           </button>
-        )}
+        </Show>
         <input
           type="range"
-          value={lf.lifetime()}
+          disabled
+          value={lifetime()}
           min={1}
           max={5}
-          onChange={(e) =>
-            lf.setLifetime(+(e.target as HTMLInputElement).value)
-          }
+          onChange={(e) => setLifetime(+(e.target as HTMLInputElement).value)}
           list="lifetime-options"
           style={{ margin: "0 1em" }}
         />
@@ -190,7 +187,7 @@ function Settings(props: Props): JSX.Element {
             <option value={k} label={v.label} />
           ))}
         </datalist>{" "}
-        <div>{LifetimeValues[lf.lifetime()].label}</div>
+        <div>{LifetimeValues[lifetime()].label}</div>
       </div>
     </div>
   );

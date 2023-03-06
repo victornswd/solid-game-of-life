@@ -1,30 +1,41 @@
 import type { JSX } from "solid-js";
-import { Index } from "solid-js";
-import { Grid } from "./types";
+import { For as Index } from "solid-js";
 import "./Life.css";
-
-interface Props {
-  population: Grid;
-  size: number;
-}
+import { useSettings } from "../context";
 
 const SIZE_THRESHOLD = 15;
-// const OptimizedRow = React.memo(Row);
-// const OptimizedCell = React.memo(Cell);
 
-function Life(props: Props): JSX.Element {
-  const style = { "--size": `${props.size}px` };
+function Life(): JSX.Element {
+  const [
+    play,
+    { togglePlay },
+    engine,
+    setRenderer,
+    width,
+    setWidth,
+    height,
+    setHeight,
+    size,
+    setSize,
+    population,
+    setPopulation,
+    lifetime,
+    setLifetime,
+    value,
+    setPreset,
+  ] = useSettings();
+  const style = { "--size": `${size()}px` };
 
   return (
     <div
-      classList={{ ["small-size"]: props.size < SIZE_THRESHOLD }}
+      classList={{ ["small-size"]: size() < SIZE_THRESHOLD }}
       class={`life`}
       style={style}
     >
-      <Index each={props.population}>{(row) => <Row row={row()} />}</Index>
+      <Index each={population()}>{(row) => <Row row={row} />}</Index>
     </div>
   );
-};
+}
 
 interface RowProps {
   row: Array<boolean>;
@@ -33,10 +44,10 @@ interface RowProps {
 function Row(props: RowProps): JSX.Element {
   return (
     <div class="row">
-      <Index each={props.row}>{(cell) => <Cell alive={cell()} />}</Index>
+      <Index each={props.row}>{(cell) => <Cell alive={cell} />}</Index>
     </div>
   );
-};
+}
 
 interface CellProps {
   alive: boolean;
@@ -46,6 +57,6 @@ function Cell(props: CellProps): JSX.Element {
   return (
     <span class={`cell`} classList={{ ["cell-alive"]: props.alive }}></span>
   );
-};
+}
 
 export default Life;

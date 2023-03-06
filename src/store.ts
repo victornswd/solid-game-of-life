@@ -56,9 +56,7 @@ function createPop() {
 export const pop = createRoot(createPop);
 
 function createLifetime() {
-  const [lifetime, setLifetime] = createSignal(
-    +Object.keys(LifetimeValues).reverse()[0]
-  );
+  const [lifetime, setLifetime] = createSignal(+Object.keys(LifetimeValues)[0]);
   return { lifetime, setLifetime };
 }
 
