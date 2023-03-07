@@ -2,7 +2,7 @@ import { JSX, Show } from "solid-js";
 import "./App.css";
 
 import { Preset } from "./types";
-import { player, renderer, size, pop } from "./store";
+import { settings } from "./actualStore";
 
 import Life from "./Life";
 import Settings from "./Settings";
@@ -16,9 +16,9 @@ function App(props: Props): JSX.Element {
     <div>
       <Settings presets={props.presets} />
       <hr />
-      <div classList={{ ["playing"]: player.play() }}>
-        <Show when={renderer.engine() === "html"}>
-          <Life population={pop.population()} size={size.size()} />
+      <div classList={{ ["playing"]: settings.play }}>
+        <Show when={settings.renderer === "html"}>
+          <Life population={settings.population} size={settings.size} />
         </Show>
         {/* <LifeCanvas population={population} size={size} /> */}
       </div>
