@@ -24,7 +24,7 @@ function Life(props: Props): JSX.Element {
       <Index each={props.population}>{(row) => <Row row={row()} />}</Index>
     </div>
   );
-};
+}
 
 interface RowProps {
   row: Array<boolean>;
@@ -36,7 +36,7 @@ function Row(props: RowProps): JSX.Element {
       <Index each={props.row}>{(cell) => <Cell alive={cell()} />}</Index>
     </div>
   );
-};
+}
 
 interface CellProps {
   alive: boolean;
@@ -46,6 +46,6 @@ function Cell(props: CellProps): JSX.Element {
   return (
     <span class={`cell`} classList={{ ["cell-alive"]: props.alive }}></span>
   );
-};
+}
 
 export default Life;
