@@ -1,4 +1,4 @@
-import type { JSX } from "solid-js";
+import { createEffect, JSX } from "solid-js";
 import { For, batch } from "solid-js";
 
 import { Preset } from "./types";
@@ -34,7 +34,9 @@ export const LifetimeValues: Record<number, { value: number; label: string }> =
 
 function Settings(props: Props): JSX.Element {
   const initialPreset = window.localStorage.getItem("presetId") || "";
-  initialPreset && loadPreset(initialPreset);
+  createEffect(() => {
+    initialPreset && loadPreset(initialPreset);
+  });
 
   function updateWidth(value: number) {
     const newWidth = Math.max(value, MIN_LENGTH);
@@ -186,9 +188,9 @@ function Settings(props: Props): JSX.Element {
           style={{ margin: "0 1em" }}
         />
         <datalist id="lifetime-options">
-          {Object.entries(LifetimeValues).map(([k, v]) => (
-            <option value={k} label={v.label} />
-          ))}
+          <For each={Object.entries(LifetimeValues)}>
+            {([k, v]) => <option value={k} label={v.label} />}
+          </For>
         </datalist>{" "}
         <div>{LifetimeValues[lf.lifetime()].label}</div>
       </div>

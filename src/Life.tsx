@@ -13,13 +13,11 @@ const SIZE_THRESHOLD = 15;
 // const OptimizedCell = React.memo(Cell);
 
 function Life(props: Props): JSX.Element {
-  const style = { "--size": `${props.size}px` };
-
   return (
     <div
       classList={{ ["small-size"]: props.size < SIZE_THRESHOLD }}
       class={`life`}
-      style={style}
+      style={{ "--size": `${props.size}px` }}
     >
       <Index each={props.population}>{(row) => <Row row={row()} />}</Index>
     </div>
@@ -43,9 +41,7 @@ interface CellProps {
 }
 
 function Cell(props: CellProps): JSX.Element {
-  return (
-    <span class={`cell`} classList={{ ["cell-alive"]: props.alive }}></span>
-  );
+  return <span class={`cell`} classList={{ ["cell-alive"]: props.alive }} />;
 }
 
 export default Life;
