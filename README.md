@@ -1,8 +1,6 @@
-## Usage
+# Game of Life in Solid.js
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
-
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+A quick rewrite of [Andrei Pfeiffer's Game of Life in React](https://github.com/andreipfeiffer/game-of-life) to test out Solid.js's performance. Check the different branches for different approaches and how they stack up against each other.
 
 ```bash
 $ npm install # or pnpm install or yarn install
